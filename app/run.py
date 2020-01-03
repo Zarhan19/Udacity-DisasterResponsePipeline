@@ -61,6 +61,11 @@ def index():
     ### data for visualizing category counts.
     label_sums = df.iloc[:, 4:].sum()
     label_names = list(label_sums.index)
+    
+    #data for visualizing topwords
+    word_series = pd.Series(' '.join(df['message']).lower().split())
+    top_words = word_series[~word_series.isin(stopwords.words("english"))].value_counts()[:5]
+    top_words_names = list(top_words.index)
 
     # create visuals
     graphs = [
@@ -96,12 +101,29 @@ def index():
                     'title': "Count"
                 },
                 'xaxis': {
-
+                    'title': "Category"
                 },
             }
-        }
+        },
+        {
+            'data': [
+                Bar(
+                    x=top_words_names,
+                    y=top_words
+                )
+            ],
 
-]
+            'layout': {
+                'title': 'Most Frequent Words',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Words"
+                }
+            }
+        }
+    ]
     
     # encode plotly graphs in JSON
     ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
